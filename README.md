@@ -2,7 +2,6 @@
 
 Continuing random Rust shenanigans
 
-
 ## Tasks
 
 - [ ] Fix private / public stuff
