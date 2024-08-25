@@ -93,7 +93,6 @@ pub fn build_tree(freq_map: HashMap<char, i64>) -> HuffmanTree {
     while min_heap.len() > 1 {
         left = min_heap.pop().unwrap().0;
         right = min_heap.pop().unwrap().0;
-        println!("left: {:#?}\nright: {:#?}", left, right);
         total_freq = left.freq + right.freq;
 
         new_node = HuffmanTreeNode::new(None, total_freq);
@@ -106,6 +105,22 @@ pub fn build_tree(freq_map: HashMap<char, i64>) -> HuffmanTree {
     HuffmanTree {
         head: Some(min_heap.pop().unwrap().0),
     }
+}
+
+pub fn traverse_tree(root_node: HuffmanTreeNode, bitstring: String) -> HashMap<char, String> {
+    let mut map: HashMap<char, String> = HashMap::new();
+    match root_node.key {
+        Some(key) => {
+            map.insert(key, bitstring.clone());
+        }
+        None => {
+            let temp_map = traverse_tree(root_node.left.unwrap(), bitstring.clone() + "0");
+            let temp_map2 = traverse_tree(root_node.right.unwrap(), bitstring.clone() + "1");
+            map.extend(temp_map);
+            map.extend(temp_map2);
+        }
+    }
+    map
 }
 
 #[cfg(test)]
@@ -136,5 +151,29 @@ mod tests {
         let tree = build_tree(freq);
 
         assert_eq!(tree.head.unwrap().freq, l);
+    }
+
+    #[test]
+    fn traverse_tree_basic_test() {
+        let s: &str = "Hello";
+        // let l: i64 = s.len() as i64;
+        let freq = assign_freq(s);
+        let tree = build_tree(freq);
+
+        let map = traverse_tree(tree.head.unwrap(), "".to_string());
+
+        println!("Basic Map: {:#?}", map);
+    }
+
+    #[test]
+    fn traverse_tree_advanced_test() {
+        let s: &str = "AABCBDEABBDC";
+        // let l: i64 = s.len() as i64;
+        let freq = assign_freq(s);
+        let tree = build_tree(freq);
+
+        let map = traverse_tree(tree.head.unwrap(), "".to_string());
+
+        println!("Adv Map: {:#?}", map);
     }
 }
