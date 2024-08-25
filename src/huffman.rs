@@ -5,10 +5,12 @@ use std::{
     collections::{BinaryHeap, HashMap},
 };
 
-struct HuffmanTree {
+#[derive(Debug)]
+pub struct HuffmanTree {
     head: Option<HuffmanTreeNode>,
 }
 
+#[derive(Debug)]
 struct HuffmanTreeNode {
     key: Option<char>,
     freq: i64,
@@ -71,7 +73,7 @@ impl Default for HuffmanTreeNode {
     }
 }
 
-pub fn build_tree(mut freq_map: HashMap<char, i64>) -> HuffmanTree {
+pub fn build_tree(freq_map: HashMap<char, i64>) -> HuffmanTree {
     let mut min_heap: BinaryHeap<Reverse<HuffmanTreeNode>> = BinaryHeap::new();
 
     // find the two min values
@@ -85,22 +87,24 @@ pub fn build_tree(mut freq_map: HashMap<char, i64>) -> HuffmanTree {
 
     let mut left;
     let mut right;
-    let mut total_freq: i64 = 0;
-    let mut new_node: HuffmanTreeNode = HuffmanTreeNode::default();
+    let mut total_freq: i64;
+    let mut new_node: HuffmanTreeNode;
 
     while min_heap.len() > 1 {
         left = min_heap.pop().unwrap().0;
         right = min_heap.pop().unwrap().0;
-
+        println!("left: {:#?}\nright: {:#?}", left, right);
         total_freq = left.freq + right.freq;
 
         new_node = HuffmanTreeNode::new(None, total_freq);
         new_node.left = Box::new(Some(left));
         new_node.right = Box::new(Some(right));
+
+        min_heap.push(Reverse(new_node));
     }
 
     HuffmanTree {
-        head: Some(new_node),
+        head: Some(min_heap.pop().unwrap().0),
     }
 }
 
@@ -114,5 +118,23 @@ mod tests {
         let freq = assign_freq(s);
         let correct = HashMap::from([('H', 1), ('e', 1), ('l', 2), ('o', 1)]);
         assert_eq!(freq, correct);
+    }
+
+    #[test]
+    fn build_tree_basic_test() {
+        let s: &str = "Hello";
+        let freq = assign_freq(s);
+        let tree = build_tree(freq);
+        assert_eq!(tree.head.unwrap().freq, 5);
+    }
+
+    #[test]
+    fn build_tree_intermediate_test() {
+        let s: &str = "AABCBDEABBDC";
+        let l = s.len() as i64;
+        let freq = assign_freq(s);
+        let tree = build_tree(freq);
+
+        assert_eq!(tree.head.unwrap().freq, l);
     }
 }
