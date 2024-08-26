@@ -1,5 +1,10 @@
+use huffman::huffman_encode;
+
 pub mod huffman;
 
 fn main() {
-    huffman::assign_freq("Hello!");
+    let s: &str = "Hello";
+
+    let encoding = huffman_encode(s);
+    println!("Encoded: {}", encoding);
 }

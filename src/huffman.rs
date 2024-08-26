@@ -39,7 +39,7 @@ impl PartialEq for HuffmanTreeNode {
 }
 
 // get a list of character frequencies
-pub fn assign_freq(input: &str) -> HashMap<char, i64> {
+fn assign_freq(input: &str) -> HashMap<char, i64> {
     let mut freq: HashMap<char, i64> = HashMap::new();
     for c in input.chars() {
         match freq.get(&c) {
@@ -73,7 +73,7 @@ impl Default for HuffmanTreeNode {
     }
 }
 
-pub fn build_tree(freq_map: HashMap<char, i64>) -> HuffmanTree {
+fn build_tree(freq_map: HashMap<char, i64>) -> HuffmanTree {
     let mut min_heap: BinaryHeap<Reverse<HuffmanTreeNode>> = BinaryHeap::new();
 
     // find the two min values
@@ -107,7 +107,7 @@ pub fn build_tree(freq_map: HashMap<char, i64>) -> HuffmanTree {
     }
 }
 
-pub fn traverse_tree(root_node: HuffmanTreeNode, bitstring: String) -> HashMap<char, String> {
+fn traverse_tree(root_node: HuffmanTreeNode, bitstring: String) -> HashMap<char, String> {
     let mut map: HashMap<char, String> = HashMap::new();
     match root_node.key {
         Some(key) => {
@@ -121,6 +121,25 @@ pub fn traverse_tree(root_node: HuffmanTreeNode, bitstring: String) -> HashMap<c
         }
     }
     map
+}
+
+// takes in an entire string (probably file contents)
+// and returns the encoded version of it
+pub fn huffman_encode(input: &str) -> String {
+    // first assign frequencies and assign each character a code.
+    let freq_map = assign_freq(input);
+    let tree = build_tree(freq_map);
+    let codes = traverse_tree(tree.head.unwrap(), "".to_string());
+
+    let copy = input.clone();
+
+    let mut res = String::new();
+
+    for c in copy.chars() {
+        res.push_str(codes.get(&c).unwrap());
+    }
+
+    res
 }
 
 #[cfg(test)]
