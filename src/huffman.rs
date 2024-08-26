@@ -131,7 +131,7 @@ pub fn huffman_encode(input: &str) -> String {
     let tree = build_tree(freq_map);
     let codes = traverse_tree(tree.head.unwrap(), "".to_string());
 
-    let copy = input.clone();
+    let copy = input;
 
     let mut res = String::new();
 
